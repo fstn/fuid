@@ -14,7 +14,6 @@ public class FuidViewClassBuilder {
 
 	private FuidViewClassBuilder() {
 		super();
-		// TODO Auto-generated constructor stub
 	}
 
 	public static FuidViewClassBuilder getInstance() {

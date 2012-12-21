@@ -8,7 +8,7 @@ import org.fuid.annotation.OpenOn;
 import org.fuid.annotation.Tab;
 import org.fuid.controller.Controller;
 
-public class FuidViewClass {
+public class FuidViewClass implements  Comparable<FuidViewClass> {
 	private Class viewClass;
 	private Component viewInstance;
 	private Class controllerClass;
@@ -61,9 +61,9 @@ public class FuidViewClass {
 	}
 
 	public Component getViewInstance() {
-		if(viewInstance==null){
+		if (viewInstance == null) {
 			try {
-				viewInstance=(Component) viewClass.newInstance();
+				viewInstance = (Component) viewClass.newInstance();
 			} catch (InstantiationException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
@@ -80,9 +80,9 @@ public class FuidViewClass {
 	}
 
 	public Controller getControllerInstance() {
-		if(controllerInstance==null){
+		if (controllerInstance == null) {
 			try {
-				controllerInstance=(Controller) controllerClass.newInstance();
+				controllerInstance = (Controller) controllerClass.newInstance();
 			} catch (InstantiationException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
@@ -98,6 +98,10 @@ public class FuidViewClass {
 		this.controllerInstance = controllerInstance;
 	}
 
+	public boolean isTab() {
+		return tab != null;
+	}
+
 	public Tab getTab() {
 		return tab;
 	}
@@ -105,10 +109,21 @@ public class FuidViewClass {
 	public void setTab(Tab tab) {
 		this.tab = tab;
 	}
-	public boolean hasTab(){
-		return this.tab!=null;
+
+	public boolean hasTab() {
+		return this.tab != null;
 	}
 	
-	
+	public int compareTo( FuidViewClass o) {
+		int retour = 0;
+		if (this.getTab() != null && o.getTab() != null) {
+			if (this.getTab().index() > o.getTab().index()) {
+				retour = 1;
+			} else if (this.getTab().index() < o.getTab().index()) {
+				retour = -1;
+			}
+		}
+		return retour;
+	}
 
 }

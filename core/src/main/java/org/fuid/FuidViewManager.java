@@ -5,6 +5,10 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+
+import javax.security.auth.login.LoginContext;
 
 import org.fuid.annotation.CloseOn;
 import org.fuid.annotation.OpenOn;
@@ -20,7 +24,7 @@ public class FuidViewManager {
 	private Map<String, List<FuidViewClass>> closeEventList;
 	private MainWindow mainWindow;
 	private static FuidViewManager instance = new FuidViewManager();
-
+	private Logger logger=Logger.getLogger(FuidViewManager.class.toString());
 	private FuidViewManager() {
 		openEventList = new HashMap<String, List<FuidViewClass>>();
 		closeEventList = new HashMap<String, List<FuidViewClass>>();
@@ -88,28 +92,21 @@ public class FuidViewManager {
 		if (toOpen != null) {
 			for (FuidViewClass fuidViewClass : toOpen) {
 				if (fuidViewClass.getControllerClass() != null) {
-					System.out.println("instanciation du controller: "
+					logger.info("instanciation du controller: "
 							+ fuidViewClass.getControllerClass().getName());
 					Object controller = fuidViewClass.getControllerInstance();
 				}
 				try {
 					mainWindow.add(fuidViewClass);
-				} catch (InstantiationException e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
-				} catch (IllegalAccessException e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
-				} catch (FuidException e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
-				}
+				} catch (Exception e) {
+					logger.log(Level.WARNING,"updateView",e);
+				} 
 			}
 		}
 		if (toClose != null) {
 			for (FuidViewClass fuidViewClass : toClose) {
 				if (fuidViewClass.getControllerClass() != null) {
-					System.out.println("suppression du controller: "
+					logger.info("suppression du controller: "
 							+ fuidViewClass.getControllerClass().getName());
 					Controller controller = fuidViewClass
 							.getControllerInstance();
@@ -117,6 +114,7 @@ public class FuidViewManager {
 					controller.clean();
 					controller = null;
 				}
+				logger.info("suppression de la vue "+fuidViewClass.getViewClass().getCanonicalName());
 				mainWindow.remove(fuidViewClass);
 			}
 		}

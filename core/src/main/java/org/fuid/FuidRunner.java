@@ -7,6 +7,8 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import org.fuid.annotation.CloseOn;
 import org.fuid.annotation.OpenOn;
@@ -24,6 +26,7 @@ import org.jdom.input.SAXBuilder;
 
 public class FuidRunner {
 
+	Logger logger=Logger.getLogger(FuidRunner.class.getCanonicalName());
 	public FuidRunner() {
 	}
 
@@ -55,17 +58,9 @@ public class FuidRunner {
 
 			}
 
-		} catch (IOException io) {
-			System.out.println(io.getMessage());
-		} catch (JDOMException jdomex) {
-			System.out.println(jdomex.getMessage());
-		} catch (ClassNotFoundException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		} catch (FuidException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
+		} catch (Exception e) {
+			logger.log(Level.SEVERE,"loadConfig",e);
+		} 
 	}
 
 	public final void run() {

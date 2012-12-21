@@ -4,14 +4,15 @@ import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Component;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.Map;
+import java.util.Set;
 
 import javax.swing.JComponent;
 import javax.swing.JFrame;
 import javax.swing.JPanel;
 
 import org.fuid.Session;
-import org.fuid.annotation.Tab;
 import org.fuid.event.FuidEvent;
 import org.fuid.event.FuidEventType;
 import org.fuid.event.FuidListener;
@@ -58,21 +59,16 @@ public class MainWindow extends JFrame implements FuidListener {
 		JComponent viewClass = (JComponent) fuidViewClass.getViewInstance();
 		String location = fuidViewClass.getLocation().location();
 		if (panels.containsKey(location)) {
-			if (fuidViewClass.hasTab()) {
-				Tab tab = fuidViewClass.getTab();
-				panels.get(location).addTab(viewClass, tab);
-			} else {
-				panels.get(location).addComponent(viewClass);
-			}
+			panels.get(location).addComponent(fuidViewClass);
 		} else {
 			throw new FuidException("Bad location: " + location,
 					FuildExceptionType.MISCONFIGURED);
 		}
-		this.pack();
 	}
 
 	public void onEvent(FuidEvent event) {
 		if (event.getType().equals(FuidEventType.REPACK)) {
+			updateView();
 			this.pack();
 		}
 
@@ -85,6 +81,7 @@ public class MainWindow extends JFrame implements FuidListener {
 			String location = fuidViewClass.getLocation().location();
 			if (panels.containsKey(location)) {
 				if (viewClass != null) {
+					((JPanel) panels.get(location)).getComponents();
 					panels.get(location).remove(viewClass);
 					viewClass = null;
 				}
@@ -97,6 +94,16 @@ public class MainWindow extends JFrame implements FuidListener {
 			e.printStackTrace();
 		}
 
+	}
+
+	public void updateView() {
+		Set keys = panels.keySet();
+		Iterator it = keys.iterator();
+		while (it.hasNext()) {
+			Object key = it.next(); 
+			FuidPanel panel = panels.get(key); 
+			panel.updateView();
+		}
 	}
 
 	public void clean() {
