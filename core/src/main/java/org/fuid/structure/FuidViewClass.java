@@ -1,16 +1,15 @@
 package org.fuid.structure;
 
-import java.awt.Component;
-
 import org.fuid.annotation.CloseOn;
 import org.fuid.annotation.Location;
 import org.fuid.annotation.OpenOn;
 import org.fuid.annotation.Tab;
 import org.fuid.controller.Controller;
+import org.fuid.view.FuidViewElement;
 
 public class FuidViewClass implements  Comparable<FuidViewClass> {
 	private Class viewClass;
-	private Component viewInstance;
+	private FuidViewElement viewInstance;
 	private Class controllerClass;
 	private Controller controllerInstance;
 	private Location location;
@@ -60,10 +59,10 @@ public class FuidViewClass implements  Comparable<FuidViewClass> {
 		this.controllerClass = controllerClass;
 	}
 
-	public Component getViewInstance() {
+	public FuidViewElement getViewInstance() {
 		if (viewInstance == null) {
 			try {
-				viewInstance = (Component) viewClass.newInstance();
+				viewInstance = (FuidViewElement) viewClass.newInstance();
 			} catch (InstantiationException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
@@ -75,7 +74,7 @@ public class FuidViewClass implements  Comparable<FuidViewClass> {
 		return viewInstance;
 	}
 
-	public void setViewInstance(Component viewInstance) {
+	public void setViewInstance(FuidViewElement viewInstance) {
 		this.viewInstance = viewInstance;
 	}
 

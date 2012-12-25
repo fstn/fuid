@@ -3,6 +3,7 @@ package org.fuid.view;
 import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Component;
+import java.awt.Dimension;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
@@ -13,9 +14,11 @@ import javax.swing.JFrame;
 import javax.swing.JPanel;
 
 import org.fuid.Session;
+import org.fuid.constant.FuidSize;
 import org.fuid.event.FuidEvent;
 import org.fuid.event.FuidEventType;
 import org.fuid.event.FuidListener;
+import org.fuid.event.FuidResizeEvent;
 import org.fuid.exception.FuidException;
 import org.fuid.exception.FuildExceptionType;
 import org.fuid.structure.FuidViewClass;
@@ -35,12 +38,16 @@ public class MainWindow extends JFrame implements FuidListener {
 
 		panels = new HashMap<String, FuidPanel>();
 		this.getContentPane().setBackground(Color.BLACK);
-
+		this.setMinimumSize(new Dimension(200,200));
+		
+		this.setExtendedState(this.getExtendedState() | JFrame.MAXIMIZED_BOTH);
+		this.setDefaultCloseOperation(EXIT_ON_CLOSE);
 		this.addFuidPanel(new FuidPanel(), BorderLayout.NORTH);
 		this.addFuidPanel(new FuidPanel(), BorderLayout.EAST);
 		this.addFuidPanel(new FuidPanel(), BorderLayout.WEST);
 		this.addFuidPanel(new FuidPanel(), BorderLayout.CENTER);
 		this.addFuidPanel(new FuidPanel(), BorderLayout.SOUTH);
+		updateSessionSize();
 
 	}
 
@@ -70,8 +77,21 @@ public class MainWindow extends JFrame implements FuidListener {
 		if (event.getType().equals(FuidEventType.REPACK)) {
 			updateView();
 			this.pack();
+			updateSessionSize();
 		}
 
+	}
+	
+	public void updateSessionSize(){
+		Session.getInstance().getCurrent().put(FuidSize.WINDOW_WIDTH, this.getSize().width);
+		Session.getInstance().getCurrent().put(FuidSize.WINDOW_HEIGHT, this.getSize().height);
+		Set keys = panels.keySet();
+		Iterator it = keys.iterator();
+		while (it.hasNext()) {
+			Object key = it.next(); 
+			FuidPanel panel = panels.get(key); 
+			panel.onResize(new FuidResizeEvent());
+		}
 	}
 
 	public void remove(FuidViewClass fuidViewClass) {
