@@ -4,6 +4,8 @@ import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Component;
 import java.awt.Dimension;
+import java.awt.event.ComponentEvent;
+import java.awt.event.ComponentListener;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
@@ -23,7 +25,7 @@ import org.fuid.exception.FuidException;
 import org.fuid.exception.FuildExceptionType;
 import org.fuid.structure.FuidViewClass;
 
-public class MainWindow extends JFrame implements FuidListener {
+public class MainWindow extends JFrame implements FuidListener,ComponentListener {
 
 	private static final long serialVersionUID = -3782830317938551432L;
 	private Map<String, FuidPanel> panels;
@@ -48,6 +50,8 @@ public class MainWindow extends JFrame implements FuidListener {
 		this.addFuidPanel(new FuidPanel(), BorderLayout.CENTER);
 		this.addFuidPanel(new FuidPanel(), BorderLayout.SOUTH);
 		updateSessionSize();
+		
+		this.addComponentListener(this);
 
 	}
 
@@ -101,7 +105,7 @@ public class MainWindow extends JFrame implements FuidListener {
 			String location = fuidViewClass.getLocation().location();
 			if (panels.containsKey(location)) {
 				if (viewClass != null) {
-					((JPanel) panels.get(location)).getComponents();
+					((FuidPanel) panels.get(location)).getComponents();
 					panels.get(location).remove(viewClass);
 					viewClass = null;
 				}
@@ -130,5 +134,24 @@ public class MainWindow extends JFrame implements FuidListener {
 		Session.getInstance().removeListener(this);
 
 	}
+	public void componentHidden(ComponentEvent e) {
+    }
+
+    public void componentMoved(ComponentEvent e) {
+    }
+
+    public void componentResized(ComponentEvent e) { 
+		Set keys = panels.keySet();
+		Iterator it = keys.iterator();
+		while (it.hasNext()) {
+			Object key = it.next(); 
+			FuidPanel panel = panels.get(key); 
+			panel.onResize(new FuidResizeEvent());
+		}
+    }
+
+    public void componentShown(ComponentEvent e) {
+
+    }
 
 }

@@ -94,7 +94,11 @@ public class FuidViewManager {
 				if (fuidViewClass.getControllerClass() != null) {
 					logger.info("instanciation du controller: "
 							+ fuidViewClass.getControllerClass().getName());
+					try{
 					Object controller = fuidViewClass.getControllerInstance();
+					}catch(ClassCastException e){
+						logger.log(Level.SEVERE,"le controller "+fuidViewClass.getControllerClass()+" doit implémenter "+Controller.class.getCanonicalName(),e);
+					}
 				}
 				try {
 					mainWindow.add(fuidViewClass);

@@ -1,11 +1,11 @@
 package org.fuid.view;
 
 import javax.swing.JPanel;
+import javax.swing.JScrollPane;
 
 import org.fuid.event.FuidResizeEvent;
 
-public abstract class FuidViewElement extends JPanel {
+public interface  FuidViewElement {
 
-	public void onResize(FuidResizeEvent fuidResizeEvent) {		
-	}
+	void onResize(FuidResizeEvent fuidResizeEvent);
 }

@@ -1,16 +1,18 @@
 package org.fuid.builder;
 
 import java.lang.annotation.Annotation;
+import java.lang.reflect.Field;
 
 import org.fuid.annotation.CloseOn;
 import org.fuid.annotation.Controller;
+import org.fuid.annotation.InsertContentPanel;
 import org.fuid.annotation.Location;
 import org.fuid.annotation.OpenOn;
 import org.fuid.annotation.Tab;
 import org.fuid.structure.FuidViewClass;
 
 public class FuidViewClassBuilder {
-	private static FuidViewClassBuilder instance = new FuidViewClassBuilder();
+	private static FuidViewClassBuilder	instance	= new FuidViewClassBuilder();
 
 	private FuidViewClassBuilder() {
 		super();
@@ -20,12 +22,11 @@ public class FuidViewClassBuilder {
 		return instance;
 	}
 
-	public FuidViewClass build(String viewClassName)
-			throws ClassNotFoundException {
+	public FuidViewClass build(String viewClassName) throws ClassNotFoundException {
 		CloseOn closeOn = null;
 		OpenOn openOn = null;
 		Controller controller = null;
-		Tab tab=null;
+		Tab tab = null;
 		FuidViewClass fuidViewClass = new FuidViewClass();
 
 		Class viewClass = Class.forName(viewClassName);
@@ -46,7 +47,7 @@ public class FuidViewClassBuilder {
 			fuidViewClass.setTab(tab);
 		}
 		fuidViewClass.setCloseOn(closeOn);
+
 		return fuidViewClass;
 	}
-
 }

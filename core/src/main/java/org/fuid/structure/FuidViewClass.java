@@ -1,22 +1,38 @@
 package org.fuid.structure;
 
+import java.awt.Component;
+import java.lang.reflect.Field;
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+
+import javax.swing.JPanel;
+import javax.swing.JScrollPane;
+
+import org.fuid.FuidRunner;
 import org.fuid.annotation.CloseOn;
+import org.fuid.annotation.Construct;
+import org.fuid.annotation.InsertContentPanel;
 import org.fuid.annotation.Location;
 import org.fuid.annotation.OpenOn;
 import org.fuid.annotation.Tab;
 import org.fuid.controller.Controller;
+import org.fuid.util.ContentManager;
 import org.fuid.view.FuidViewElement;
 
-public class FuidViewClass implements  Comparable<FuidViewClass> {
-	private Class viewClass;
-	private FuidViewElement viewInstance;
-	private Class controllerClass;
-	private Controller controllerInstance;
-	private Location location;
-	private Tab tab;
-	private OpenOn openOn;
-	private CloseOn closeOn;
+public class FuidViewClass implements Comparable<FuidViewClass> {
+	private Class			viewClass;
+	private FuidViewElement	viewInstance;
+	private Class			controllerClass;
+	private Controller		controllerInstance;
+	private Location		location;
+	private Tab				tab;
+	private OpenOn			openOn;
+	private CloseOn			closeOn;
 
+	Logger logger=Logger.getLogger(FuidViewClass.class.getCanonicalName());
+	
 	@SuppressWarnings("rawtypes")
 	public final Class getViewClass() {
 		return viewClass;
@@ -59,10 +75,35 @@ public class FuidViewClass implements  Comparable<FuidViewClass> {
 		this.controllerClass = controllerClass;
 	}
 
-	public FuidViewElement getViewInstance() {
+	public Component getViewInstance() {
+		return (Component) getViewElementInstance();
+	}
+
+	public FuidViewElement getViewElementInstance() {
 		if (viewInstance == null) {
 			try {
 				viewInstance = (FuidViewElement) viewClass.newInstance();
+				// insert le content pour le ScrollPane
+				for (Field field : viewClass.getDeclaredFields()) {
+					InsertContentPanel insertContentPanel = (InsertContentPanel) field.getAnnotation(InsertContentPanel.class);
+					if (insertContentPanel != null && viewInstance instanceof JScrollPane) {
+						JPanel content=ContentManager.getInstance().getContentPanel((JScrollPane) viewInstance, insertContentPanel.layout());
+						field.setAccessible(true);
+						field.set(viewInstance,content);
+					}
+				}
+				// invocation de la methode post construct
+				for (Method method : viewClass.getMethods()) {
+					if (method.isAnnotationPresent(Construct.class)) {
+						try {
+							method.invoke(viewInstance, null);
+						} catch (Exception e) {
+							logger.log(Level.SEVERE,"can't execute construct method",e);
+						}
+
+					}
+				}
+
 			} catch (InstantiationException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
@@ -112,8 +153,8 @@ public class FuidViewClass implements  Comparable<FuidViewClass> {
 	public boolean hasTab() {
 		return this.tab != null;
 	}
-	
-	public int compareTo( FuidViewClass o) {
+
+	public int compareTo(FuidViewClass o) {
 		int retour = 0;
 		if (this.getTab() != null && o.getTab() != null) {
 			if (this.getTab().index() > o.getTab().index()) {
@@ -124,5 +165,11 @@ public class FuidViewClass implements  Comparable<FuidViewClass> {
 		}
 		return retour;
 	}
+
+	@Override
+	public String toString() {
+		return "FuidViewClass [viewClass=" + viewClass + ", controllerClass=" + controllerClass + "]";
+	}
+	
 
 }
